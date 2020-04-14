@@ -33,7 +33,8 @@ parser.add_argument('url', type=str, help="Url to pinterest page that will get s
 parser.add_argument('--pinterest', type=str2bool, help="[wstaw tu jakies madre slowo] if page is Pinterest page.", default=False)  # todo
 parser.add_argument('--images', type=str2bool, help=".", default=True)  # todo
 # parser.add_argument('--videos', type=bool, help=".", default=False)  # todo
-parser.add_argument('--channel', type=int, help="Discord channel id.")  # todo
+# parser.add_argument('--channel', type=int, help="Discord channel id.")  # todo
+parser.add_argument('--geckopath', type=str, help="Geckdriver path.")  # todo
 
 args = parser.parse_args()
 
@@ -47,17 +48,20 @@ cute_words = ["ambrosial", "appealing", "attractive", "captivating", "charming",
               "pleasing", "precious", "sexy", "suave"]
 
 
-def random_name():
-    # url = "https://random-word-api.herokuapp.com/word?number=3"
-    # r = requests.get(url)
-    # words = r.text.replace("[", "").replace("]", "").replace("\"", "")
-    # words = words.split(',')
-
-    words = []
-    while len(words) != 3:
-        omg = random.choice(cute_words)
-        if omg not in words:
-            words.append(omg)
+def random_name(*, cute=False):
+    if cute:
+        url = "https://random-word-api.herokuapp.com/word?number=3"
+        r = requests.get(url)
+        words = r.text.replace("[", "").replace("]", "").replace("\"", "")
+        words = words.split(',')
+    elif not cute:
+        words = []
+        while len(words) != 3:
+            omg = random.choice(cute_words)
+            if omg not in words:
+                words.append(omg)
+    else:
+        raise Exception("no") # todo
 
     word = ""
     for word_ in words:
@@ -95,7 +99,7 @@ def main():
     options = Options()
     options.add_argument("--headless")
 
-    driver = webdriver.Firefox(executable_path=r"C:\Users\Style\Desktop\pinterest scrapper\utils\geckodriver.exe",
+    driver = webdriver.Firefox(executable_path=args.geckopath or "{os.getcwd()}\utils\geckodriver.exe",
                                firefox_options=options)
     driver.get(args.url)
     if args.pinterest:  # so this is fucking broken for now todo
